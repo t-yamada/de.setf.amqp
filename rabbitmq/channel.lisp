@@ -94,9 +94,10 @@
 ;;;!!! once there is nothing wating the count is up-to-date
 
 (defmethod consumer-empty-p ((consumer QueueingConsumer.))
-  (and (amqp.utility:collection-empty-p (consumer-queue consumer))
+  (and (de.setf.amqp.implementation::collection-empty-p
+	(consumer-queue consumer))
        (let ((count 0))
-         (amqp:command-loop ((consumer-channel consumer) :wait nil)
+         (amqp.u:command-loop ((consumer-channel consumer) :wait nil)
            (amqp:deliver ((class amqp:basic) &key &allow-other-keys)
                          ;; just count, but don't handle
                          (print (incf count))
@@ -111,7 +112,8 @@
 (defmethod consumer-arrived-count ((consumer QueueingConsumer.))
   (if (consumer-empty-p consumer)
     0
-    (amqp.u::collection-size (consumer-queue consumer))))
+    (de.setf.amqp.implementation::collection-size
+     (consumer-queue consumer))))
 
 (defmethod consumer-arrived-count ((consumer null))
   0)
