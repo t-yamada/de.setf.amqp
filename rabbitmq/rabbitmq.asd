@@ -17,7 +17,9 @@
 (asdf:defsystem :de.setf.amqp.rabbitmq
   :description "RABBITMQ - interface to RabbitMQ"
   :author "james anderson <james.anderson@setf.de>"
-  :depends-on (:de.setf.amqp.AMQP-1-1-0-8-0)
+  :depends-on (:de.setf.amqp.AMQP-1-1-0-8-0
+	       :de.setf.amqp.AMQP-1-1-0-9-0
+	       :de.setf.amqp.AMQP-1-1-0-9-1)
   :serial t
   :components ((:file "pkg")
                (:file "parameters")
