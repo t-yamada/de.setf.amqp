@@ -1003,11 +1003,12 @@ In addition compound buffer accessors are defined for the types
                                             (incf position)))
                            (values value position)))
                        
-                       (defun (setf ,buffer-unsigned-name) (value buffer position &optional (assert-conditions t))
+                       (defun (setf ,buffer-unsigned-name) (orig-value buffer position &optional (assert-conditions t))
                          #-sbcl (declare (type (frame-buffer ,*frame-size*) buffer))
                          #+sbcl (declare (type (simple-array (unsigned-byte 8) (*)) buffer))
-                         (declare (type fixnum position)
-                                  (type ,(if (<= (expt 2 length) most-positive-fixnum) 'fixnum 'integer) value))
+                         (let ((value (or orig-value 0)))
+			   (declare (type fixnum position)
+				    (type ,(if (<= (expt 2 length) most-positive-fixnum) 'fixnum 'integer) value))
                          (assert-condition (and (integerp value) (>= value 0) (< value ,(expt 2 length)))
                                            (setf ,buffer-unsigned-name) "Invalid byte value, exceeds domain: ~s."
                                            value)
@@ -1020,7 +1021,7 @@ In addition compound buffer accessors are defined for the types
                                  (progn ,@(loop for i from (1- bytes) downto 0
                                                 append `((setf (aref buffer (+ position ,i)) (logand #xff value))
                                                          (setf value (ash value -8))))
-                                        (+ position ,bytes))))
+                                        (+ position ,bytes)))))
                        
                        (defun ,buffer-signed-name (buffer position  &optional (assert-conditions t))
                          (values (,signed-name (,buffer-unsigned-name buffer position assert-conditions))
