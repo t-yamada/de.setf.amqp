@@ -35,7 +35,7 @@
 
 (unless (find-package :de.setf.utility)
   (load (merge-pathnames (make-pathname :directory '(:relative :up "utility")
-                                        :name "pathnames")
+                                        :name "pathnames" :type "lisp")
                          *load-pathname*)))
 
 
