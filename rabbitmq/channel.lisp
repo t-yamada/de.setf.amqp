@@ -70,12 +70,12 @@
 (interpose-superclass 'channel 'amqp:channel)
 
 (defmethod channel-ticket ((channel channel))
-  (amqp.utility:channel-ticket channel))
+  (amqp.u:channel-ticket channel))
 
 ;;; define a consumer and a deilvery
 
 (defclass queueingconsumer. ()
-  ((queue :initform (make-instance 'amqp.utility:queue)
+  ((queue :initform (make-instance 'amqp.u:queue)
           :reader consumer-queue)
    (channel
     :initform nil :initarg :channel
@@ -86,7 +86,7 @@
 
 (defmethod consumer-next-delivery ((consumer queueingconsumer.))
   (unless (consumer-empty-p consumer)
-    (amqp.utility:dequeue (consumer-queue consumer))))
+    (amqp.u:dequeue (consumer-queue consumer))))
 
 
 ;;;!!! this needs to look through the queue to see if there is any pending i/o
@@ -111,7 +111,7 @@
 (defmethod consumer-arrived-count ((consumer QueueingConsumer.))
   (if (consumer-empty-p consumer)
     0
-    (amqp.utility:collection-size (consumer-queue consumer))))
+    (amqp.u::collection-size (consumer-queue consumer))))
 
 (defmethod consumer-arrived-count ((consumer null))
   0)
@@ -131,13 +131,13 @@
             (let* ((body (apply #'amqp:respond-to-deliver class args))
                    (message (make-instance 'queueingconsumer$delivery
                               :body body
-                              :content-type (amqp.utility:class-mime-type class)
+                              :content-type (amqp.u:class-mime-type class)
                               :envelope (apply #'make-envelope
-                                               (amqp.utility:method-arguments method))
-                              :properties (amqp.utility:class-properties class)))
+                                               (amqp.u:method-arguments method))
+                              :properties (amqp.u:class-properties class)))
                    (consumer (the-consumer channel)))
               (when consumer
-                (amqp.utility:enqueue message (consumer-queue consumer)))
+                (amqp.u:enqueue message (consumer-queue consumer)))
               message)))
   (setf (consumer-channel consumer) channel)
   (setf-the-consumer consumer channel)
@@ -150,14 +150,14 @@
            (let* ((body (apply #'amqp:respond-to-deliver class args))
                   (message (make-instance 'queueingconsumer$delivery
                              :body body
-                             :content-type (amqp.utility:class-mime-type class)
+                             :content-type (amqp.u:class-mime-type class)
                              :envelope (apply #'make-envelope
-                                              (amqp.utility:method-arguments method))
-                             :properties (amqp.utility:class-properties class)))
+                                              (amqp.u:method-arguments method))
+                             :properties (amqp.u:class-properties class)))
                   (consumer (the-consumer channel)))
              (amqp:log :error class "delivered: ~s" message)
              (when consumer
-               (amqp.utility:enqueue message (consumer-queue consumer)))
+               (amqp.u:enqueue message (consumer-queue consumer)))
              message)))
     (check-type consumer queueingconsumer.)
     (amqp:request-consume (amqp:basic channel) :no-ack no-ack :queue queue)
