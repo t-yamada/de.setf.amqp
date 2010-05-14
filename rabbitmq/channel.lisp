@@ -126,8 +126,9 @@
 
 
 (defmethod Channel.basicConsume ((channel AMQP-1-1-0-8-0:channel) ticket queue no-ack consumer)
+  (declare (ignore ticket))
   (check-type consumer queueingconsumer.)
-  (amqp:request-consume (amqp:basic channel) :ticket ticket :no-ack no-ack :queue queue)
+  (amqp:request-consume (amqp:basic channel)  :no-ack no-ack :queue queue)
   (setf (de.setf.amqp.implementation::channel-command channel 'amqp:deliver)
         #'(lambda (channel class method &rest args)
             (let* ((body (apply #'amqp:respond-to-deliver class args))
